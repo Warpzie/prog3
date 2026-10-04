@@ -1,14 +1,33 @@
-// Online C++ compiler (editor)
-// Write and run C++ online using this editor.
-
-// Online C++ compiler (editor)
-// Write and run C++ online using this editor.
-
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 using namespace std;
+
+class Date {
+private:
+    std::chrono::system_clock::time_point tp;
+public:
+    Date() : tp(std::chrono::system_clock::now()) {}
+    explicit Date(const std::chrono::system_clock::time_point& t) : tp(t) {}
+    static Date today() { return Date(std::chrono::system_clock::now()); }
+    std::string toString() const {
+        std::time_t t = std::chrono::system_clock::to_time_t(tp);
+        std::tm tm = *std::localtime(&t);
+        std::ostringstream ss;
+        ss << std::put_time(&tm, "%Y-%m-%d");
+        return ss.str();
+    }
+    bool operator<(const Date& other) const { return tp < other.tp; }
+};
+
+inline std::ostream& operator<<(std::ostream& os, const Date& d) {
+    os << d.toString();
+    return os;
+}
 
 class User
 {
@@ -17,9 +36,7 @@ protected:
     string password;
 private:
     int id;
-
     string email;
-
 
 public:
     //construct User
@@ -29,8 +46,6 @@ public:
         this->email = em;
         this->password = pass;
     }
-
-    ~User();
 
     string getName() {
         return name;
@@ -48,8 +63,6 @@ public:
 
 
 class Customer : public User {
-private:
-    string objednavky[];//added pre priradenie obejdnavky ku zakaznikovi
 public:
     Customer(int idin, string n, string em, string pass) : User(idin, n, em, pass) {}
     string getName() {
@@ -58,13 +71,7 @@ public:
     string getPass() {
         return password;
     }
-    string getObjednavky(string name) { //pick z objednavok ??
-        return objednavky(name);
-    }
-    void setObjednavky(Objednavka.name) {
-        objednavky.append(Objednavka.name);
-    }
-}
+};
 class Admin : public User {
 public:
     Admin(int idin, string n, string em, string pass) : User(idin, n, em, pass) {}
@@ -74,18 +81,18 @@ public:
     string getPass() {
         return password;
     }
-}
+};
 
 class Objednavka {
 private:
     int id;
     string name;
     string state;
-    date dateOfCreation;
+    Date dateOfCreation;
     string description;
 public:
     //create, confirm, changeState
-    string getDate() { //pre zoradenie podla datumu
+    Date getDate() { //pre zoradenie podla datumu
         return dateOfCreation;
     }
     string getDesc() {
@@ -97,7 +104,7 @@ public:
     void setState(string st) {
         state = st;
     }
-    Objednavka(int idin, string n, string st, date dateOf, string desc) {
+    Objednavka(int idin, string n, string st, Date dateOf, string desc) {
         this->id = idin;
         this->name = n;
         this->state = st;
@@ -113,7 +120,7 @@ private:
     int id;
     string filename;
     string type;
-    date dateOfCreation;
+    Date dateOfCreation;
     string route;
 public:
     //upload, download
@@ -123,14 +130,14 @@ public:
     string getType() { //pre spravny sposob zobrazenie
         return type;
     }
-    File(int idin, string fn, string ty, date dateOf, string rt) {
+    File(int idin, string fn, string ty, Date dateOf, string rt) : Objednavka(idin, fn, "", dateOf, "") {
         this->id = idin;
         this->filename = fn;
         this->type = ty;
         this->dateOfCreation = dateOf;
         this->route = rt;
     }
-}
+};
 
 class Artwork {
 private:
@@ -154,7 +161,7 @@ public:
         this->category = cat;
     }
 
-}
+};
 
 int main() {
 
